@@ -1,0 +1,180 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #833a3a 0%, #7a0000 100%);
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.login-card {
+  background: #f1eff0;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.logo-section {
+  /* Centrar contenido y asegurar que el logo quede centrado */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  width: 140px;           /* ancho del círculo */
+  height: 140px;          /* alto del círculo */
+  border-radius: 50%;     /* forma circular */
+  background: #ffffff;    /* fondo del círculo (ajusta color si quieres) */
+  padding: 12px;          /* espacio entre el borde del círculo y la imagen */
+  object-fit: contain;    /* mantiene la proporción de la imagen dentro del círculo */
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.salon-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  letter-spacing: 3px;
+}
+
+.salon-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 5px 0 0 0;
+  font-weight: 300;
+}
+
+.login-form {
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e1e1e1;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #7a0000;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.login-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #833a3a 0%, #7a0000 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #fcc;
+  font-size: 14px;
+}
+
+.demo-accounts {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.demo-accounts h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-item {
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #666;
+  border: 1px solid #e1e1e1;
+}
+
+.account-item strong {
+  color: #333;
+}
+
+.account-item.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.account-item.clickable:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+  
+  .salon-title {
+    font-size: 2rem;
+  }
+}
