@@ -46,7 +46,57 @@ const citasController = {
         }
     },
 
-    // Crear nueva cita - CORREGIDO
+getCitasByDay: (req, res) => {
+  try {
+    const { fecha } = req.query;
+    
+    if (!fecha) {
+      return res.status(400).json({
+        success: false,
+        message: 'Se requiere el parámetro fecha'
+      });
+    }
+
+    console.log('Buscando TODAS las citas para la fecha:', fecha);
+
+    // TEMPORAL: Quitar filtro de estados para debugging
+    const query = `
+      SELECT c.*, s.nombre as servicio_nombre, u.nombre as usuario_nombre 
+      FROM citas c 
+      JOIN servicios s ON c.servicio_id = s.id 
+      JOIN usuarios u ON c.usuario_id = u.id 
+      WHERE c.fecha = ?
+      ORDER BY c.hora
+    `;
+    
+    db.query(query, [fecha], (err, results) => {
+      if (err) {
+        console.error('Error al obtener citas del día:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Error al cargar las citas del día'
+        });
+      }
+      
+      console.log('TOTAL de citas encontradas en BD:', results.length);
+      console.log('Detalle de citas:', results);
+      
+      res.json({
+        success: true,
+        citas: results
+      });
+    });
+    
+  } catch (error) {
+    console.error('Error al obtener citas del día:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+
+},
+    // Crear nueva cita
     createCita: (req, res) => {
         try {
             const { usuario_id, servicio_id, fecha, hora, notas } = req.body;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './principal.css';
 import CrearCita from './crearcita';
+import HorasDelDia from './horas';
 
 const Principal = ({ currentUser, onLogout }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -8,6 +9,8 @@ const Principal = ({ currentUser, onLogout }) => {
   const [showCrearCita, setShowCrearCita] = useState(false);
   const [citas, setCitas] = useState([]);
   const [loadingCitas, setLoadingCitas] = useState(false);
+  const [showHorasDelDia, setShowHorasDelDia] = useState(false);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
 
   // Cargar citas al cambiar de mes o al montar el componente
   useEffect(() => {
@@ -63,16 +66,18 @@ const Principal = ({ currentUser, onLogout }) => {
   };
   
   // Seleccionar día (solo si no es pasado)
-  const handleSelectDay = (day) => {
+    const handleSelectDay = (day) => {
     if (!day) return;
     const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
     if (dayDate >= todayStart) {
-      setSelectedDay(day);
-      // aquí podrías abrir un modal o navegar a creación de cita
+        setSelectedDay(day);
+        setFechaSeleccionada(dayDate);
+        setShowHorasDelDia(true);
     }
-  };
+    };
   
   // Función para obtener los días del mes
   const getDaysInMonth = (date) => {
@@ -244,6 +249,16 @@ const Principal = ({ currentUser, onLogout }) => {
           setShowCrearCita(false);
           fetchCitasDelMes(); // Recargar citas después de crear una nueva
         }}
+        currentUser={currentUser}
+      />
+
+      <HorasDelDia 
+        isOpen={showHorasDelDia}
+        onClose={() => {
+            setShowHorasDelDia(false);
+            setFechaSeleccionada(null);
+        }}
+        fecha={fechaSeleccionada}
         currentUser={currentUser}
       />
     </div>

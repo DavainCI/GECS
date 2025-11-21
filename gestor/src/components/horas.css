@@ -1,0 +1,283 @@
+/* horas.css - Versión actualizada para solo visualización */
+.horas-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.horas-modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalAppear 0.3s ease-out;
+}
+
+.horas-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e1e5e9;
+  background: linear-gradient(135deg, #833a3a 0%, #7a0000 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.horas-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.horas-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.horas-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.horas-content {
+  padding: 24px;
+}
+
+.horas-fecha-info {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.horas-fecha-info h3 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.horas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.hora-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.hora-item.disponible {
+  border-color: #48bb78;
+  background-color: #f0fff4;
+}
+
+.hora-item.ocupada {
+  border-color: #f56565;
+  background-color: #fff5f5;
+}
+
+.hora-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.hora-texto {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.hora-estado {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.hora-item.disponible .hora-estado {
+  color: #48bb78;
+}
+
+.hora-item.ocupada .hora-estado {
+  color: #f56565;
+}
+
+.hora-cita-info {
+  flex: 2;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #718096;
+  border-left: 1px solid #e2e8f0;
+  padding-left: 16px;
+  margin-left: 16px;
+}
+
+.hora-cliente {
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.hora-servicio {
+  color: #718096;
+  margin-bottom: 4px;
+}
+
+.hora-notas {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.horas-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e1e5e9;
+}
+
+.horas-cancel-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #833a3a;
+  color: white;
+  min-width: 120px;
+}
+
+.horas-cancel-btn:hover {
+  background-color: #7a0000;
+  transform: translateY(-1px);
+}
+
+/* Leyenda de estados */
+.horas-leyenda {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e1e5e9;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+.leyenda-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid;
+}
+
+.leyenda-color.disponible {
+  background-color: #48bb78;
+  border-color: #48bb78;
+}
+
+.leyenda-color.ocupada {
+  background-color: #f56565;
+  border-color: #f56565;
+}
+
+/* Loading state */
+.horas-loading {
+  text-align: center;
+  padding: 40px;
+  color: #718096;
+  font-size: 0.875rem;
+}
+
+/* Animación */
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .horas-modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .horas-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .horas-content {
+    padding: 20px;
+  }
+  
+  .hora-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .hora-cita-info {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding-left: 0;
+    padding-top: 12px;
+    margin-left: 0;
+    margin-top: 8px;
+    width: 100%;
+  }
+  
+  .horas-leyenda {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+}
