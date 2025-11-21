@@ -1,10 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './principal.css';
+import CrearCita from './crearcita';
 
 const Principal = ({ currentUser, onLogout }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
-  
+  const [showCrearCita, setShowCrearCita] = useState(false);
+  const [citas, setCitas] = useState([]);
+  const [loadingCitas, setLoadingCitas] = useState(false);
+
+  // Cargar citas al cambiar de mes o al montar el componente
+  useEffect(() => {
+    fetchCitasDelMes();
+  }, [currentDate]);
+
+  // Función para obtener las citas del mes actual
+  const fetchCitasDelMes = async () => {
+    setLoadingCitas(true);
+    try {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      
+      const response = await fetch(`http://localhost:5000/api/citas/mes?year=${year}&month=${month}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setCitas(data.citas);
+      }
+    } catch (error) {
+      console.error('Error al cargar citas:', error);
+    } finally {
+      setLoadingCitas(false);
+    }
+  };
+
   // Función para cambiar al mes anterior (ahora evita retroceder antes del mes actual)
   const prevMonth = () => {
     const newDate = new Date(currentDate);
@@ -66,7 +95,33 @@ const Principal = ({ currentUser, onLogout }) => {
     
     return days;
   };
-  
+
+  // Función para verificar si un día tiene citas
+  const tieneCitas = (day) => {
+    if (!day) return false;
+    
+    const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const dateString = dayDate.toISOString().split('T')[0];
+    
+    return citas.some(cita => {
+      const citaDate = new Date(cita.fecha).toISOString().split('T')[0];
+      return citaDate === dateString;
+    });
+  };
+
+  // Función para obtener el número de citas en un día
+  const getNumeroCitas = (day) => {
+    if (!day) return 0;
+    
+    const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const dateString = dayDate.toISOString().split('T')[0];
+    
+    return citas.filter(cita => {
+      const citaDate = new Date(cita.fecha).toISOString().split('T')[0];
+      return citaDate === dateString;
+    }).length;
+  };
+
   const days = getDaysInMonth(currentDate);
   const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
                      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -92,7 +147,12 @@ const Principal = ({ currentUser, onLogout }) => {
       {/* Main Content */}
       <main className="principal-main">
         <div className="actions-section">
-          <button className="action-btn">crear cita</button>
+          <button 
+            className="action-btn" 
+            onClick={() => setShowCrearCita(true)}
+          >
+            crear cita
+          </button>
           <div className="search-date">
             <input 
               type="text" 
@@ -114,6 +174,7 @@ const Principal = ({ currentUser, onLogout }) => {
             </button>
             <h2 className="month-title">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+              {loadingCitas && <span className="loading-indicator"> Cargando...</span>}
             </h2>
             <button 
               className="month-nav-btn" 
@@ -140,22 +201,51 @@ const Principal = ({ currentUser, onLogout }) => {
                 const dayDate = day ? new Date(currentDate.getFullYear(), currentDate.getMonth(), day) : null;
                 const isPast = dayDate && (dayDate < todayStart);
                 const isSelected = day === selectedDay;
+                const hasAppointments = tieneCitas(day);
+                const appointmentCount = getNumeroCitas(day);
+                
                 return (
                   <div 
                     key={index} 
-                    className={`calendar-day ${day ? '' : 'empty'} ${isPast ? 'past' : 'clickable'} ${isSelected ? 'selected' : ''}`}
+                    className={`calendar-day ${day ? '' : 'empty'} ${isPast ? 'past' : 'clickable'} ${isSelected ? 'selected' : ''} ${hasAppointments ? 'has-appointment' : ''}`}
                     onClick={() => handleSelectDay(day)}
                     role={day ? 'button' : undefined}
                     aria-disabled={isPast ? true : undefined}
                   >
                     {day}
+                    {hasAppointments && (
+                      <div className="appointment-indicator">
+                        <span className="appointment-dot"></span>
+                        {appointmentCount > 1 && (
+                          <span className="appointment-count">{appointmentCount}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           </div>
+
+          {/* Leyenda de citas */}
+          <div className="calendar-legend">
+            <div className="legend-item">
+              <div className="legend-color has-appointment"></div>
+              <span>Días con citas</span>
+            </div>
+          </div>
         </div>
       </main>
+
+      {/* Modal Crear Cita */}
+      <CrearCita 
+        isOpen={showCrearCita}
+        onClose={() => {
+          setShowCrearCita(false);
+          fetchCitasDelMes(); // Recargar citas después de crear una nueva
+        }}
+        currentUser={currentUser}
+      />
     </div>
   );
 };
