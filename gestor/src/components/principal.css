@@ -282,6 +282,61 @@
   font-weight: bold;
 }
 
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #7a0000;
+}
+
+.legend-color.has-appointment {
+  background: #7a0000;
+}
+
+.loading-indicator {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 10px;
+  font-weight: normal;
+}
+
+/* Estilos para días con citas */
+.calendar-day.has-appointment {
+  position: relative;
+  background: rgba(122, 0, 0, 0.1);
+  border: 2px solid #7a0000;
+}
+
+.calendar-day.has-appointment:hover {
+  background: rgba(122, 0, 0, 0.2);
+}
+
+.calendar-day.past {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.calendar-day.past:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
 @media (max-width: 480px) {
   .calendar-day {
     height: 35px;

@@ -5,8 +5,11 @@ const citasController = require('../controllers/citasController');
 // Obtener citas por mes
 router.get('/mes', citasController.getCitasByMonth);
 
-// Obtener citas por día (NUEVA RUTA)
+// Obtener citas por día
 router.get('/dia', citasController.getCitasByDay);
+
+// Obtener historial de citas
+router.get('/historial', citasController.getHistorialCitas);
 
 // Crear nueva cita
 router.post('/', citasController.createCita);

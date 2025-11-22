@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './principal.css';
 import CrearCita from './crearcita';
 import HorasDelDia from './horas';
+import Historial from './historial';
 
 const Principal = ({ currentUser, onLogout }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -11,11 +12,14 @@ const Principal = ({ currentUser, onLogout }) => {
   const [loadingCitas, setLoadingCitas] = useState(false);
   const [showHorasDelDia, setShowHorasDelDia] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
+  const [showHistorial, setShowHistorial] = useState(false);
 
   // Cargar citas al cambiar de mes o al montar el componente
   useEffect(() => {
-    fetchCitasDelMes();
-  }, [currentDate]);
+    if (!showHistorial) {
+      fetchCitasDelMes();
+    }
+  }, [currentDate, showHistorial]);
 
   // Función para obtener las citas del mes actual
   const fetchCitasDelMes = async () => {
@@ -37,14 +41,14 @@ const Principal = ({ currentUser, onLogout }) => {
     }
   };
 
-  // Función para cambiar al mes anterior (ahora evita retroceder antes del mes actual)
+  // Función para cambiar al mes anterior (evita retroceder antes del mes actual)
   const prevMonth = () => {
     const newDate = new Date(currentDate);
     newDate.setMonth(newDate.getMonth() - 1);
     
     // No permitir ir a meses anteriores al mes actual
     const now = new Date();
-    const minDate = new Date(now.getFullYear(), now.getMonth(), 1); // primer día del mes actual
+    const minDate = new Date(now.getFullYear(), now.getMonth(), 1);
     
     if (new Date(newDate.getFullYear(), newDate.getMonth(), 1) >= minDate) {
       setCurrentDate(newDate);
@@ -58,7 +62,7 @@ const Principal = ({ currentUser, onLogout }) => {
     
     // Verificar que no sea más de 1 mes después del actual
     const now = new Date();
-    const maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 1); // primer día del siguiente mes
+    const maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     
     if (new Date(newDate.getFullYear(), newDate.getMonth(), 1) <= maxDate) {
       setCurrentDate(newDate);
@@ -66,18 +70,18 @@ const Principal = ({ currentUser, onLogout }) => {
   };
   
   // Seleccionar día (solo si no es pasado)
-    const handleSelectDay = (day) => {
+  const handleSelectDay = (day) => {
     if (!day) return;
     const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     
     if (dayDate >= todayStart) {
-        setSelectedDay(day);
-        setFechaSeleccionada(dayDate);
-        setShowHorasDelDia(true);
+      setSelectedDay(day);
+      setFechaSeleccionada(dayDate);
+      setShowHorasDelDia(true);
     }
-    };
+  };
   
   // Función para obtener los días del mes
   const getDaysInMonth = (date) => {
@@ -147,6 +151,17 @@ const Principal = ({ currentUser, onLogout }) => {
   
   const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
+  // Si showHistorial es true, mostrar el componente Historial
+  if (showHistorial) {
+    return (
+      <Historial 
+        currentUser={currentUser}
+        onBack={() => setShowHistorial(false)}
+      />
+    );
+  }
+
+  // Si showHistorial es false, mostrar el calendario normal
   return (
     <div className="principal-container">
       {/* Header */}
@@ -158,7 +173,12 @@ const Principal = ({ currentUser, onLogout }) => {
           </button>
         </div>
         <nav className="navigation">
-          <button className="nav-btn">ver historial</button>
+          <button 
+            className="nav-btn" 
+            onClick={() => setShowHistorial(true)}
+          >
+            ver historial
+          </button>
           <button className="nav-btn">ver mis citas</button>
         </nav>
       </header>
@@ -234,10 +254,7 @@ const Principal = ({ currentUser, onLogout }) => {
                     {day}
                     {hasAppointments && (
                       <div className="appointment-indicator">
-                        <span className="appointment-dot"></span>
-                        {appointmentCount > 1 && (
-                          <span className="appointment-count">{appointmentCount}</span>
-                        )}
+                        <span className="appointment-count">{appointmentCount}</span>
                       </div>
                     )}
                   </div>
@@ -279,4 +296,4 @@ const Principal = ({ currentUser, onLogout }) => {
   );
 };
 
-export default Principal;
+export default Principal; 

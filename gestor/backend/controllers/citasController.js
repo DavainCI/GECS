@@ -46,56 +46,142 @@ const citasController = {
         }
     },
 
-getCitasByDay: (req, res) => {
-  try {
-    const { fecha } = req.query;
-    
-    if (!fecha) {
-      return res.status(400).json({
-        success: false,
-        message: 'Se requiere el parámetro fecha'
-      });
-    }
+    // Obtener citas por día
+    getCitasByDay: (req, res) => {
+        try {
+            const { fecha } = req.query;
+            
+            if (!fecha) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Se requiere el parámetro fecha'
+                });
+            }
 
-    console.log('Buscando TODAS las citas para la fecha:', fecha);
+            console.log('Buscando TODAS las citas para la fecha:', fecha);
 
-    // TEMPORAL: Quitar filtro de estados para debugging
-    const query = `
-      SELECT c.*, s.nombre as servicio_nombre, u.nombre as usuario_nombre 
-      FROM citas c 
-      JOIN servicios s ON c.servicio_id = s.id 
-      JOIN usuarios u ON c.usuario_id = u.id 
-      WHERE c.fecha = ?
-      ORDER BY c.hora
-    `;
-    
-    db.query(query, [fecha], (err, results) => {
-      if (err) {
-        console.error('Error al obtener citas del día:', err);
-        return res.status(500).json({
-          success: false,
-          message: 'Error al cargar las citas del día'
-        });
-      }
-      
-      console.log('TOTAL de citas encontradas en BD:', results.length);
-      console.log('Detalle de citas:', results);
-      
-      res.json({
-        success: true,
-        citas: results
-      });
-    });
-    
-  } catch (error) {
-    console.error('Error al obtener citas del día:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
+            const query = `
+                SELECT c.*, s.nombre as servicio_nombre, u.nombre as usuario_nombre 
+                FROM citas c 
+                JOIN servicios s ON c.servicio_id = s.id 
+                JOIN usuarios u ON c.usuario_id = u.id 
+                WHERE c.fecha = ?
+                ORDER BY c.hora
+            `;
+            
+            db.query(query, [fecha], (err, results) => {
+                if (err) {
+                    console.error('Error al obtener citas del día:', err);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Error al cargar las citas del día'
+                    });
+                }
+                
+                console.log('TOTAL de citas encontradas en BD:', results.length);
+                console.log('Detalle de citas:', results);
+                
+                res.json({
+                    success: true,
+                    citas: results
+                });
+            });
+            
+        } catch (error) {
+            console.error('Error al obtener citas del día:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    },
 
-},
+    // Obtener historial de citas con filtros
+    getHistorialCitas: (req, res) => {
+        try {
+            const { usuario_id, filter = 'todas', rol_id } = req.query;
+
+            if (!usuario_id || !rol_id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Se requieren el ID del usuario y el rol'
+                });
+            }
+
+            let query = `
+                SELECT c.*, s.nombre as nombre_servicio, u.nombre as cliente_nombre, u.username as cliente_username
+                FROM citas c 
+                JOIN servicios s ON c.servicio_id = s.id 
+                JOIN usuarios u ON c.usuario_id = u.id 
+                WHERE 1=1
+            `;
+            
+            const params = [];
+            
+            // Si es cliente (rol_id = 3), solo mostrar sus propias citas
+            // Si es administrador (1) o estilista (2), mostrar todas las citas
+            if (parseInt(rol_id) === 3) {
+                query += ' AND c.usuario_id = ?';
+                params.push(parseInt(usuario_id));
+            }
+            
+            // Aplicar filtro de estado si no es "todas"
+            if (filter !== 'todas') {
+                let estadoFilter;
+                switch (filter) {
+                    case 'pendientes':
+                        estadoFilter = 'pendiente';
+                        break;
+                    case 'confirmadas':
+                        estadoFilter = 'confirmada';
+                        break;
+                    case 'completadas':
+                        estadoFilter = 'completada';
+                        break;
+                    case 'canceladas':
+                        estadoFilter = 'cancelada';
+                        break;
+                    default:
+                        estadoFilter = filter;
+                }
+                query += ' AND c.estado = ?';
+                params.push(estadoFilter);
+            }
+            
+            query += ' ORDER BY c.fecha DESC, c.hora DESC';
+
+            console.log('Ejecutando query de historial:', query);
+            console.log('Parámetros:', params);
+            console.log('Rol del usuario:', rol_id);
+
+            db.query(query, params, (err, results) => {
+                if (err) {
+                    console.error('Error al obtener historial de citas:', err);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Error al cargar el historial de citas'
+                    });
+                }
+                
+                console.log(`Encontradas ${results.length} citas en el historial`);
+                console.log('Rol del usuario solicitante:', rol_id);
+                
+                res.json({
+                    success: true,
+                    citas: results,
+                    total: results.length
+                });
+            });
+
+        } catch (error) {
+            console.error('Error al obtener historial de citas:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    },
+
     // Crear nueva cita
     createCita: (req, res) => {
         try {
