@@ -261,6 +261,27 @@
   gap: 10px;
 }
 
+.appointment-indicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.appointment-count {
+  font-size: 10px;
+  font-weight: bold;
+}
+
 @media (max-width: 480px) {
   .calendar-day {
     height: 35px;

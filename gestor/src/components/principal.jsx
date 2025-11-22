@@ -121,10 +121,24 @@ const Principal = ({ currentUser, onLogout }) => {
     const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     const dateString = dayDate.toISOString().split('T')[0];
     
-    return citas.filter(cita => {
+    // Contar solo IDs únicos para evitar duplicados en el array de citas
+    const ids = new Set();
+    citas.forEach(cita => {
       const citaDate = new Date(cita.fecha).toISOString().split('T')[0];
-      return citaDate === dateString;
-    }).length;
+      if (citaDate === dateString && cita.id != null) {
+        ids.add(cita.id);
+      }
+    });
+
+    // Si por alguna razón no hay IDs, caer de nuevo al conteo por fecha
+    if (ids.size === 0) {
+      return citas.filter(cita => {
+        const citaDate = new Date(cita.fecha).toISOString().split('T')[0];
+        return citaDate === dateString;
+      }).length;
+    }
+
+    return ids.size;
   };
 
   const days = getDaysInMonth(currentDate);
