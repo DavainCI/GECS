@@ -335,6 +335,105 @@
   }
 }
 
+/* Estilos para edición en tabla */
+.estado-select {
+  padding: 6px 8px;
+  border: 2px solid #7a0000;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.precio-input {
+  padding: 6px 8px;
+  border: 2px solid #7a0000;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  width: 80px;
+  text-align: center;
+}
+
+.acciones-col {
+  white-space: nowrap;
+}
+
+.acciones-buttons {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+}
+
+.btn-editar, .btn-guardar, .btn-cancelar {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-editar {
+  background: #7a0000;
+  color: white;
+}
+
+.btn-editar:hover {
+  background: #5a0000;
+  transform: translateY(-1px);
+}
+
+.btn-guardar {
+  background: #2e7d32;
+  color: white;
+}
+
+.btn-guardar:hover:not(:disabled) {
+  background: #1b5e20;
+  transform: translateY(-1px);
+}
+
+.btn-cancelar {
+  background: #c62828;
+  color: white;
+}
+
+.btn-cancelar:hover:not(:disabled) {
+  background: #b71c1c;
+  transform: translateY(-1px);
+}
+
+.btn-guardar:disabled, .btn-cancelar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive para acciones */
+@media (max-width: 768px) {
+  .acciones-buttons {
+    flex-direction: row;
+  }
+  
+  .btn-editar, .btn-guardar, .btn-cancelar {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  .precio-input {
+    width: 60px;
+    font-size: 12px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .historial-header {

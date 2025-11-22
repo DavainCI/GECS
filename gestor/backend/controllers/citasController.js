@@ -332,7 +332,97 @@ const citasController = {
                 message: 'Error interno del servidor'
             });
         }
+    },
+
+    // Actualizar cita (estado y precio)
+    updateCita: (req, res) => {
+        try {
+            const { id } = req.params;
+            const { estado, precio_final } = req.body;
+
+            console.log('Actualizando cita ID:', id);
+            console.log('Datos recibidos:', { estado, precio_final });
+
+            if (!id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Se requiere el ID de la cita'
+                });
+            }
+
+            // Validar que el estado sea válido si se proporciona
+            if (estado && !['pendiente', 'confirmada', 'completada', 'cancelada'].includes(estado)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Estado no válido'
+                });
+            }
+
+            // Construir query dinámicamente
+            let updateFields = [];
+            let updateValues = [];
+
+            if (estado) {
+                updateFields.push('estado = ?');
+                updateValues.push(estado);
+            }
+
+            if (precio_final !== undefined && precio_final !== null) {
+                updateFields.push('precio_final = ?');
+                updateValues.push(parseFloat(precio_final));
+            }
+
+            // Si no hay campos para actualizar
+            if (updateFields.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No se proporcionaron campos para actualizar'
+                });
+            }
+
+            updateValues.push(parseInt(id));
+
+            const query = `
+                UPDATE citas 
+                SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            `;
+
+            console.log('Query de actualización:', query);
+            console.log('Valores:', updateValues);
+
+            db.query(query, updateValues, (err, result) => {
+                if (err) {
+                    console.error('Error al actualizar cita:', err);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Error al actualizar la cita'
+                    });
+                }
+
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Cita no encontrada'
+                    });
+                }
+
+                res.json({
+                    success: true,
+                    message: 'Cita actualizada exitosamente',
+                    affectedRows: result.affectedRows
+                });
+            });
+
+        } catch (error) {
+            console.error('Error al actualizar cita:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
     }
+
 };
 
 module.exports = citasController;

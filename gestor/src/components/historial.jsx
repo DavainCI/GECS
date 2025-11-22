@@ -5,6 +5,10 @@ const Historial = ({ currentUser, onBack }) => {
   const [citas, setCitas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('todas');
+  const [editingCita, setEditingCita] = useState(null);
+  const [editEstado, setEditEstado] = useState('');
+  const [editPrecio, setEditPrecio] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchHistorialCitas();
@@ -67,6 +71,70 @@ const Historial = ({ currentUser, onBack }) => {
 
   // Función para determinar si mostrar la columna de cliente
   const mostrarColumnaCliente = currentUser?.rol_id !== 3;
+
+  // Función para determinar si puede editar (admin o estilista)
+  const puedeEditar = currentUser?.rol_id === 1 || currentUser?.rol_id === 2;
+
+  // Función para iniciar edición
+  const iniciarEdicion = (cita) => {
+    setEditingCita(cita.id);
+    setEditEstado(cita.estado);
+    setEditPrecio(cita.precio_final || '');
+  };
+
+  // Función para cancelar edición
+  const cancelarEdicion = () => {
+    setEditingCita(null);
+    setEditEstado('');
+    setEditPrecio('');
+  };
+
+  // Función para guardar cambios
+  const guardarCambios = async (citaId) => {
+    if (!editEstado) {
+      alert('Por favor selecciona un estado válido');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/citas/${citaId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          estado: editEstado,
+          precio_final: editPrecio ? parseFloat(editPrecio) : null
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Actualizar la lista de citas
+        const citasActualizadas = citas.map(cita => 
+          cita.id === citaId 
+            ? { 
+                ...cita, 
+                estado: editEstado, 
+                precio_final: editPrecio ? parseFloat(editPrecio) : null 
+              }
+            : cita
+        );
+        setCitas(citasActualizadas);
+        setEditingCita(null);
+        alert('Cambios guardados exitosamente');
+      } else {
+        alert('Error al guardar los cambios: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error al guardar cambios:', error);
+      alert('Error al guardar los cambios');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="historial-container">
@@ -149,6 +217,7 @@ const Historial = ({ currentUser, onBack }) => {
                     <th>Estado</th>
                     <th>Precio</th>
                     <th>Notas</th>
+                    {puedeEditar && <th>Acciones</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -165,20 +234,74 @@ const Historial = ({ currentUser, onBack }) => {
                       )}
                       <td className="servicio-col">{cita.nombre_servicio || 'Servicio'}</td>
                       <td className="estado-col">
-                        <span className={`estado-badge ${getEstadoClass(cita.estado)}`}>
-                          {getEstadoText(cita.estado)}
-                        </span>
+                        {editingCita === cita.id ? (
+                          <select 
+                            value={editEstado} 
+                            onChange={(e) => setEditEstado(e.target.value)}
+                            className="estado-select"
+                          >
+                            <option value="pendiente">Pendiente</option>
+                            <option value="confirmada">Confirmada</option>
+                            <option value="completada">Completada</option>
+                            <option value="cancelada">Cancelada</option>
+                          </select>
+                        ) : (
+                          <span className={`estado-badge ${getEstadoClass(cita.estado)}`}>
+                            {getEstadoText(cita.estado)}
+                          </span>
+                        )}
                       </td>
                       <td className="precio-col">
-                        {cita.precio_final 
-                          ? `$${parseFloat(cita.precio_final).toFixed(2)}` 
-                          : 'No definido'}
+                        {editingCita === cita.id ? (
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={editPrecio}
+                            onChange={(e) => setEditPrecio(e.target.value)}
+                            placeholder="Precio"
+                            className="precio-input"
+                          />
+                        ) : (
+                          cita.precio_final 
+                            ? `$${parseFloat(cita.precio_final).toFixed(2)}` 
+                            : 'No definido'
+                        )}
                       </td>
                       <td className="notas-col">
                         <div className="notas-text">
                           {cita.notas || 'Sin notas'}
                         </div>
                       </td>
+                      {puedeEditar && (
+                        <td className="acciones-col">
+                          {editingCita === cita.id ? (
+                            <div className="acciones-buttons">
+                              <button 
+                                onClick={() => guardarCambios(cita.id)}
+                                disabled={saving}
+                                className="btn-guardar"
+                              >
+                                {saving ? 'Guardando...' : 'Guardar'}
+                              </button>
+                              <button 
+                                onClick={cancelarEdicion}
+                                disabled={saving}
+                                className="btn-cancelar"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          ) : (
+                            <button 
+                              onClick={() => iniciarEdicion(cita)}
+                              className="btn-editar"
+                            >
+                              Editar
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

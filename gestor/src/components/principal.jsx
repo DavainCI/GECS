@@ -177,9 +177,9 @@ const Principal = ({ currentUser, onLogout }) => {
             className="nav-btn" 
             onClick={() => setShowHistorial(true)}
           >
-            ver historial
+            VER CITAS
           </button>
-          <button className="nav-btn">ver mis citas</button>
+          
         </nav>
       </header>
 
@@ -296,4 +296,4 @@ const Principal = ({ currentUser, onLogout }) => {
   );
 };
 
-export default Principal; 
+export default Principal;

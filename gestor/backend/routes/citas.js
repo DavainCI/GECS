@@ -20,4 +20,7 @@ router.get('/mis-citas', citasController.getMisCitas);
 // Obtener todos los servicios
 router.get('/servicios', citasController.getServicios);
 
+// Actualizar cita - ¡NUEVA RUTA!
+router.put('/:id', citasController.updateCita);
+
 module.exports = router;
