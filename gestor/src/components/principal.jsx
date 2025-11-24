@@ -192,13 +192,6 @@ const Principal = ({ currentUser, onLogout }) => {
           >
             crear cita
           </button>
-          <div className="search-date">
-            <input 
-              type="text" 
-              placeholder="buscar fecha"
-              className="search-input"
-            />
-          </div>
         </div>
 
         {/* Calendar Section */}

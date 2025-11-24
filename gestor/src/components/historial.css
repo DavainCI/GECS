@@ -470,6 +470,40 @@
   }
 }
 
+.btn-cancelar-cita {
+  background: #c62828;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+}
+
+.btn-cancelar-cita:hover:not(:disabled) {
+  background: #b71c1c;
+  transform: translateY(-1px);
+}
+
+.btn-cancelar-cita:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive para acciones de cliente */
+@media (max-width: 768px) {
+  .btn-cancelar-cita {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}
+
 @media (max-width: 480px) {
   .historial-title {
     font-size: 1.5rem;

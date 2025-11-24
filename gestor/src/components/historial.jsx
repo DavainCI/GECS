@@ -9,6 +9,7 @@ const Historial = ({ currentUser, onBack }) => {
   const [editEstado, setEditEstado] = useState('');
   const [editPrecio, setEditPrecio] = useState('');
   const [saving, setSaving] = useState(false);
+  const [cancelando, setCancelando] = useState(false);
 
   useEffect(() => {
     fetchHistorialCitas();
@@ -75,11 +76,25 @@ const Historial = ({ currentUser, onBack }) => {
   // Función para determinar si puede editar (admin o estilista)
   const puedeEditar = currentUser?.rol_id === 1 || currentUser?.rol_id === 2;
 
-  // Función para iniciar edición
+  // Función para verificar si una cita se puede cancelar (solo para clientes)
+  const sePuedeCancelar = (cita) => {
+    // Solo citas pendientes o confirmadas se pueden cancelar
+    return (cita.estado === 'pendiente' || cita.estado === 'confirmada') && 
+           currentUser?.rol_id === 3;
+  };
+
+  // Función para verificar si una cita se puede editar (no completada ni cancelada)
+  const sePuedeEditar = (cita) => {
+    return cita.estado !== 'completada' && cita.estado !== 'cancelada';
+  };
+
+  // Función para iniciar edición (solo admin/estilista)
   const iniciarEdicion = (cita) => {
-    setEditingCita(cita.id);
-    setEditEstado(cita.estado);
-    setEditPrecio(cita.precio_final || '');
+    if (sePuedeEditar(cita)) {
+      setEditingCita(cita.id);
+      setEditEstado(cita.estado);
+      setEditPrecio(cita.precio_final || '');
+    }
   };
 
   // Función para cancelar edición
@@ -89,7 +104,7 @@ const Historial = ({ currentUser, onBack }) => {
     setEditPrecio('');
   };
 
-  // Función para guardar cambios
+  // Función para guardar cambios (admin/estilista)
   const guardarCambios = async (citaId) => {
     if (!editEstado) {
       alert('Por favor selecciona un estado válido');
@@ -133,6 +148,46 @@ const Historial = ({ currentUser, onBack }) => {
       alert('Error al guardar los cambios');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Función para cancelar cita (cliente)
+  const cancelarCita = async (citaId) => {
+    if (!window.confirm('¿Estás seguro de que quieres cancelar esta cita?')) {
+      return;
+    }
+
+    setCancelando(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/citas/${citaId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          estado: 'cancelada'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Actualizar la lista de citas
+        const citasActualizadas = citas.map(cita => 
+          cita.id === citaId 
+            ? { ...cita, estado: 'cancelada' }
+            : cita
+        );
+        setCitas(citasActualizadas);
+        alert('Cita cancelada exitosamente');
+      } else {
+        alert('Error al cancelar la cita: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error al cancelar cita:', error);
+      alert('Error al cancelar la cita');
+    } finally {
+      setCancelando(false);
     }
   };
 
@@ -217,7 +272,7 @@ const Historial = ({ currentUser, onBack }) => {
                     <th>Estado</th>
                     <th>Precio</th>
                     <th>Notas</th>
-                    {puedeEditar && <th>Acciones</th>}
+                    {(puedeEditar || currentUser?.rol_id === 3) && <th>Acciones</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -273,35 +328,52 @@ const Historial = ({ currentUser, onBack }) => {
                           {cita.notas || 'Sin notas'}
                         </div>
                       </td>
-                      {puedeEditar && (
-                        <td className="acciones-col">
-                          {editingCita === cita.id ? (
-                            <div className="acciones-buttons">
+                      <td className="acciones-col">
+                        {/* Acciones para Admin/Estilista */}
+                        {puedeEditar && (
+                          <>
+                            {editingCita === cita.id ? (
+                              <div className="acciones-buttons">
+                                <button 
+                                  onClick={() => guardarCambios(cita.id)}
+                                  disabled={saving}
+                                  className="btn-guardar"
+                                >
+                                  {saving ? 'Guardando...' : 'Guardar'}
+                                </button>
+                                <button 
+                                  onClick={cancelarEdicion}
+                                  disabled={saving}
+                                  className="btn-cancelar"
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            ) : (
                               <button 
-                                onClick={() => guardarCambios(cita.id)}
-                                disabled={saving}
-                                className="btn-guardar"
+                                onClick={() => iniciarEdicion(cita)}
+                                disabled={!sePuedeEditar(cita)}
+                                className="btn-editar"
+                                title={!sePuedeEditar(cita) ? "No se puede editar citas completadas o canceladas" : "Editar cita"}
                               >
-                                {saving ? 'Guardando...' : 'Guardar'}
+                                Editar
                               </button>
-                              <button 
-                                onClick={cancelarEdicion}
-                                disabled={saving}
-                                className="btn-cancelar"
-                              >
-                                Cancelar
-                              </button>
-                            </div>
-                          ) : (
-                            <button 
-                              onClick={() => iniciarEdicion(cita)}
-                              className="btn-editar"
-                            >
-                              Editar
-                            </button>
-                          )}
-                        </td>
-                      )}
+                            )}
+                          </>
+                        )}
+                        
+                        {/* Acciones para Cliente */}
+                        {currentUser?.rol_id === 3 && (
+                          <button 
+                            onClick={() => cancelarCita(cita.id)}
+                            disabled={!sePuedeCancelar(cita) || cancelando}
+                            className="btn-cancelar"
+                            title={!sePuedeCancelar(cita) ? "Solo se pueden cancelar citas pendientes o confirmadas" : "Cancelar cita"}
+                          >
+                            {cancelando ? 'Cancelando...' : 'Cancelar Cita'}
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
