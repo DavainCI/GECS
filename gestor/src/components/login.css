@@ -19,42 +19,35 @@
 }
 
 .logo-section {
-  /* Centrar contenido y asegurar que el logo quede centrado */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  margin-bottom: 30px;
 }
 
 .logo {
-  width: 140px;           /* ancho del círculo */
-  height: 140px;          /* alto del círculo */
-  border-radius: 50%;     /* forma circular */
-  background: #ffffff;    /* fondo del círculo (ajusta color si quieres) */
-  padding: 12px;          /* espacio entre el borde del círculo y la imagen */
-  object-fit: contain;    /* mantiene la proporción de la imagen dentro del círculo */
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #ffffff;
+  padding: 12px;
+  object-fit: contain;
   display: block;
   margin: 0 auto;
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
-.salon-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #333;
-  margin: 0;
-  letter-spacing: 3px;
-}
-
 .salon-subtitle {
-  font-size: 1.2rem;
-  color: #666;
-  margin: 5px 0 0 0;
-  font-weight: 300;
+  font-size: 1.8rem;
+  color: #333;
+  margin: 10px 0 0 0;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .login-form {
-  margin-bottom: 25px;
+  margin-bottom: 0;
 }
 
 .form-group {
@@ -82,7 +75,7 @@
 .form-group input:focus {
   outline: none;
   border-color: #7a0000;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(122, 0, 0, 0.1);
 }
 
 .form-group input:disabled {
@@ -106,7 +99,7 @@
 
 .login-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(122, 0, 0, 0.4);
 }
 
 .login-button:disabled {
@@ -125,56 +118,17 @@
   font-size: 14px;
 }
 
-.demo-accounts {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-.demo-accounts h3 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.account-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.account-item {
-  background: white;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #666;
-  border: 1px solid #e1e1e1;
-}
-
-.account-item strong {
-  color: #333;
-}
-
-.account-item.clickable {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.account-item.clickable:hover {
-  background-color: #e9ecef;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
 @media (max-width: 480px) {
   .login-card {
     padding: 30px 20px;
   }
   
-  .salon-title {
-    font-size: 2rem;
+  .salon-subtitle {
+    font-size: 1.5rem;
+  }
+  
+  .logo {
+    width: 120px;
+    height: 120px;
   }
 }

@@ -81,20 +81,6 @@ const Login = ({ onLogin }) => {
           </button>
         </form>
 
-        <div className="demo-accounts">
-          <h3>Cuentas de demostración:</h3>
-          <div className="account-list">
-            {demoAccounts.map((account, index) => (
-              <div 
-                key={index} 
-                className="account-item clickable"
-                onClick={() => fillDemoAccount(account)}
-              >
-                <strong>{account.rol}:</strong> {account.username} / {account.password}
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
