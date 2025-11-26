@@ -28,7 +28,7 @@ npm install
 ### 3. En el terminal:
 
 ```bash
-cd backend
+cd gestor/backend
 npm run dev
 ```
 
